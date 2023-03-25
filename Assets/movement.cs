@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class movement : MonoBehaviour
 {
@@ -10,9 +11,17 @@ public class movement : MonoBehaviour
     private int desiredLane = 1;
     public float laneDistance = 4;
     private float centerPosition;
+
+    public InputActionReference goLeft;
+    public InputActionReference goRight;
+    
+
     // Start is called before the first frame update
     void Start()
     {
+        //aButton = goLeft.FindAction("AButton");
+        goLeft.action.started += OnAButtonStartedLeft;
+        goRight.action.started += OnAButtonStartedRight;
         controller = GetComponent<CharacterController>();
         centerPosition = transform.position.x;
 
@@ -24,23 +33,8 @@ public class movement : MonoBehaviour
         direction.z = forwardSpeed;
         transform.position += transform.forward * forwardSpeed * Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            desiredLane++;
-            if (desiredLane == 3)
-            {
-                desiredLane = 2;
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            desiredLane--;
-            if (desiredLane == -1)
-            {
-                desiredLane = 0;
-            }
-        }
+      
+     
 
         Vector3 targetPosition = transform.position;
         Debug.Log(desiredLane);
@@ -69,6 +63,31 @@ public class movement : MonoBehaviour
     {
         controller.Move(direction * Time.fixedDeltaTime);
     }
+
+    private void OnAButtonStartedLeft(InputAction.CallbackContext context)
+    {
+        Debug.Log("OnButtonStartedLeft");
+
+            desiredLane--;
+            if (desiredLane == -1)
+            {
+                desiredLane = 0;
+            }
+        
+
+    }
+
+
+    private void OnAButtonStartedRight(InputAction.CallbackContext context)
+    {
+        Debug.Log("OnButtonStartedRight");
+        desiredLane++;
+        if (desiredLane == 3)
+        {
+            desiredLane = 2;
+        }
+    }
+
 
 
 }
