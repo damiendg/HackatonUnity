@@ -8,8 +8,8 @@ using UnityEngine.InputSystem;
 public class movement : MonoBehaviour
 {
     private Vector3 direction;
-    private CharacterController controller;
-    public float forwardSpeed; // Vitesse de déplacement du joueur
+    //private CharacterController controller;
+    public float forwardSpeed = 50000000;
     private int desiredLane = 1;
     public float laneDistance = 4;
     private float centerPosition;
@@ -19,22 +19,23 @@ public class movement : MonoBehaviour
     public Transform m_wayDirection;
 
     private bool isCollidingWithCube = false; // Ajout de la variable pour vérifier la collision
+    
     public InputActionReference goLeft;
     public InputActionReference goRight;
-
+    
     public bool isContinue = true;
     private bool oneTime = true;
-    
+
 
     void Start()
     {
-        forwardSpeed = 5;
-        //aButton = goLeft.FindAction("AButton");
-        goLeft.action.started += OnAButtonStartedLeft;
-        goRight.action.started += OnAButtonStartedRight;
-        controller = GetComponent<CharacterController>();
+        //controller = GetComponent<CharacterController>();
+        Debug.Log(transform.position);
         centerPosition = transform.position.x;
         Invoke("DisplayMessage", 30.0f);
+        
+        goLeft.action.started += OnAButtonStartedLeft;
+        goRight.action.started += OnAButtonStartedRight;
     }
 
     void DisplayMessage()
@@ -44,75 +45,6 @@ public class movement : MonoBehaviour
 
     void Update()
     {
-        if (isContinue)
-        {
-            direction.z = forwardSpeed;
-            transform.position += transform.forward * forwardSpeed * Time.deltaTime;
-        
-            Vector3 targetPosition = transform.position;
-          
-            if (desiredLane == 0)
-            {
-                transform.position = new Vector3(centerPosition - laneDistance, transform.position.y, transform.position.z);
-                //targetPosition += Vector3.left *laneDistance;
-            }
-            else if (desiredLane == 1)
-            {
-                transform.position = new Vector3(centerPosition, transform.position.y, transform.position.z);
-                //targetPosition += Vector3.right * laneDistance;
-            }
-            else
-            {
-                transform.position = new Vector3(centerPosition + laneDistance, transform.position.y, transform.position.z);
-
-            }
-            // transform.position = Vector3.Lerp(transform.position, targetPosition, 80*Time.deltaTime);
-        }
-        else
-        {
-            if (oneTime)
-            {
-                Debug.Log("TERMINATION DE LA PARTIE");
-                forwardSpeed = 0;
-                direction.z = forwardSpeed;
-                transform.position += transform.forward * forwardSpeed * Time.deltaTime;
-        
-                Vector3 targetPosition = transform.position;
-                Debug.Log(desiredLane);
-                if (desiredLane == 0)
-                {
-                    transform.position = new Vector3(centerPosition - laneDistance, transform.position.y, transform.position.z);
-                    //targetPosition += Vector3.left *laneDistance;
-                }
-                else if (desiredLane == 1)
-                {
-                    transform.position = new Vector3(centerPosition, transform.position.y, transform.position.z);
-                    //targetPosition += Vector3.right * laneDistance;
-                }
-                else
-                {
-                    transform.position = new Vector3(centerPosition + laneDistance, transform.position.y, transform.position.z);
-
-                }
-
-                oneTime = false;
-            }
-            
-        }
-    
-       
-
-    }
-
-
-    private void FixedUpdate()
-    {
-        controller.Move(direction * Time.fixedDeltaTime);
-    }
-
-    private void OnAButtonStartedLeft(InputAction.CallbackContext context)
-    {
-        Debug.Log("OnButtonStartedLeft");
         if (!isCollidingWithCube) // Ajout de la condition pour arrêter le mouvement si en collision
         {
             direction.z = forwardSpeed;
@@ -123,6 +55,14 @@ public class movement : MonoBehaviour
             direction.z = 0;
         }
 
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            desiredLane++;
+            if (desiredLane == 3)
+            {
+                desiredLane = 2;
+            }
+        }
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -160,7 +100,7 @@ public class movement : MonoBehaviour
         //controller.Move(direction * Time.fixedDeltaTime);
     }
 
-    void SpawnCube()
+    public void SpawnCube()
     {
         Vector3 spawnPosition = transform.position + transform.forward * cubeSpawnDistance;
         spawnPosition.y = 1;
@@ -223,4 +163,3 @@ public class movement : MonoBehaviour
         }
     }
 }
-
