@@ -7,18 +7,22 @@ public class movement : MonoBehaviour
 {
     private Vector3 direction;
     private CharacterController controller;
-    public float forwardSpeed = 5; // Vitesse de déplacement du joueur
+    public float forwardSpeed; // Vitesse de déplacement du joueur
     private int desiredLane = 1;
     public float laneDistance = 4;
     private float centerPosition;
 
     public InputActionReference goLeft;
     public InputActionReference goRight;
+
+    public bool isContinue = true;
+    private bool oneTime = true;
     
 
     // Start is called before the first frame update
     void Start()
     {
+        forwardSpeed = 5;
         //aButton = goLeft.FindAction("AButton");
         goLeft.action.started += OnAButtonStartedLeft;
         goRight.action.started += OnAButtonStartedRight;
@@ -30,31 +34,63 @@ public class movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        direction.z = forwardSpeed;
-        transform.position += transform.forward * forwardSpeed * Time.deltaTime;
-
-      
-     
-
-        Vector3 targetPosition = transform.position;
-        Debug.Log(desiredLane);
-        if (desiredLane == 0)
+        if (isContinue)
         {
-            transform.position = new Vector3(centerPosition - laneDistance, transform.position.y, transform.position.z);
-            //targetPosition += Vector3.left *laneDistance;
-        }
-        else if (desiredLane == 1)
-        {
-            transform.position = new Vector3(centerPosition, transform.position.y, transform.position.z);
-            //targetPosition += Vector3.right * laneDistance;
+            direction.z = forwardSpeed;
+            transform.position += transform.forward * forwardSpeed * Time.deltaTime;
+        
+            Vector3 targetPosition = transform.position;
+          
+            if (desiredLane == 0)
+            {
+                transform.position = new Vector3(centerPosition - laneDistance, transform.position.y, transform.position.z);
+                //targetPosition += Vector3.left *laneDistance;
+            }
+            else if (desiredLane == 1)
+            {
+                transform.position = new Vector3(centerPosition, transform.position.y, transform.position.z);
+                //targetPosition += Vector3.right * laneDistance;
+            }
+            else
+            {
+                transform.position = new Vector3(centerPosition + laneDistance, transform.position.y, transform.position.z);
+
+            }
+            // transform.position = Vector3.Lerp(transform.position, targetPosition, 80*Time.deltaTime);
         }
         else
         {
-            transform.position = new Vector3(centerPosition + laneDistance, transform.position.y, transform.position.z);
+            if (oneTime)
+            {
+                Debug.Log("TERMINATION DE LA PARTIE");
+                forwardSpeed = 0;
+                direction.z = forwardSpeed;
+                transform.position += transform.forward * forwardSpeed * Time.deltaTime;
+        
+                Vector3 targetPosition = transform.position;
+                Debug.Log(desiredLane);
+                if (desiredLane == 0)
+                {
+                    transform.position = new Vector3(centerPosition - laneDistance, transform.position.y, transform.position.z);
+                    //targetPosition += Vector3.left *laneDistance;
+                }
+                else if (desiredLane == 1)
+                {
+                    transform.position = new Vector3(centerPosition, transform.position.y, transform.position.z);
+                    //targetPosition += Vector3.right * laneDistance;
+                }
+                else
+                {
+                    transform.position = new Vector3(centerPosition + laneDistance, transform.position.y, transform.position.z);
 
+                }
+
+                oneTime = false;
+            }
+            
         }
-
-        // transform.position = Vector3.Lerp(transform.position, targetPosition, 80*Time.deltaTime);
+    
+       
 
     }
 

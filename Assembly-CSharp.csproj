@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\movement.cs" />
+     <Compile Include="Assets\SendPosition.cs" />
      <None Include="Assets\Supercyan Free Forest Sample\Shaders\Legacy\CelShader.shader" />
      <None Include="Assets\Supercyan Free Forest Sample\Shaders\SupercyanShaderLighting.cginc" />
      <None Include="Assets\Supercyan Free Forest Sample\Shaders\SupercyanShader.shader" />
