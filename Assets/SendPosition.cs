@@ -31,6 +31,13 @@ public class SendPosition : MonoBehaviour
         set => _movement.isContinue = value;
     }
 
+    public int gameBegin
+    {
+        get { return _movement.gameBegin; }
+
+        set => _movement.gameBegin = value;
+    }
+
     private void Start()
     {
         if (_movement == null)
@@ -96,6 +103,9 @@ public class SendPosition : MonoBehaviour
             trap3 = int.Parse(values[2]);
             trap4 = int.Parse(values[3]);
 
+            gameBegin = trap1;
+
+
             Debug.Log(trap1);
 
             if (trap1 == 1 && state1)
@@ -118,18 +128,24 @@ public class SendPosition : MonoBehaviour
             {
                 Debug.Log("TRAP 3 : ACTIVEEEEEEEEEEEEEER");
                 //None
-                _movement.SpawnCubeForwardPlayer(1);
+                _movement.SpawnCubeOnLane(3, 0);
+                _movement.SpawnCubeOnLane(3, 1);
                 state3 = false;
             }
             if (trap4 == 1 && state4)
             {
                 Debug.Log("TRAP 4 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCubeForwardPlayer(1);
+                _movement.SpawnCubeForwardPlayer(4);
+                Invoke("respawnBear", 4.0f);
                 state4 = false;
             }
 
         }
     }
 
+    private void respawnBear()
+    {
+        _movement.SpawnCubeForwardPlayer(4);
+    }
 
 }

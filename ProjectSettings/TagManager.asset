@@ -9,6 +9,8 @@ TagManager:
   - Cube
   - Tree
   - Wolf
+  - Barrier
+  - Bear
   layers:
   - Default
   - TransparentFX

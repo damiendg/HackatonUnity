@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-
+using UnityEngine.SceneManagement;
 
 public class movement : MonoBehaviour
 {
+    public Transform m_playerPosition;
     private Vector3 direction;
     //private CharacterController controller;
     public float forwardSpeed;
     public GameObject cubePrefabA;
     public GameObject cubePrefabB;
+    public GameObject cubePrefabC;
+    public GameObject cubePrefabD;
     private int desiredLane = 1;
     public float laneDistance = 4;
     private float centerPosition;
@@ -28,10 +31,12 @@ public class movement : MonoBehaviour
 
     public bool isContinue = true;
     private bool oneTime = true;
+    public int gameBegin;
 
 
     void Start()
     {
+        gameBegin = 0;
         centerPosition = transform.position.x;
 
         goLeft.action.started += OnAButtonStartedLeft;
@@ -42,84 +47,105 @@ public class movement : MonoBehaviour
     public Transform m_whatToMove;
     void Update()
     {
-        if (!isCollidingWithCube) // Ajout de la condition pour arrêter le mouvement si en collision
+        if (gameBegin >= 0)
         {
-            direction.z = forwardSpeed;
-            m_whatToMove.position += m_wayDirection.forward * forwardSpeed * Time.deltaTime;
-        }
-        else
-        {
-            direction.z = 0;
-            looser.gameObject.SetActive(true);
-        }
 
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            desiredLane++;
-            if (desiredLane == 3)
+
+            if (!isCollidingWithCube) // Ajout de la condition pour arrêter le mouvement si en collision
             {
-                desiredLane = 2;
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            desiredLane--;
-            if (desiredLane == -1)
-            {
-                desiredLane = 0;
-            }
-        }
-
-        if (isContinue)
-        {
-            direction.z = forwardSpeed;
-
-            Vector3 targetPosition = transform.position;
-
-            if (desiredLane == 0)
-            {
-                m_whatToMove.position = new Vector3(centerPosition - laneDistance, m_whatToMove.position.y, m_whatToMove.position.z);
-                //targetPosition += Vector3.left *laneDistance;
-            }
-            else if (desiredLane == 1)
-            {
-                m_whatToMove.position = new Vector3(centerPosition, m_whatToMove.position.y, m_whatToMove.position.z);
-                //targetPosition += Vector3.right * laneDistance;
+                direction.z = forwardSpeed;
+                m_whatToMove.position += m_wayDirection.forward * forwardSpeed * Time.deltaTime;
             }
             else
             {
-                m_whatToMove.position = new Vector3(centerPosition + laneDistance, m_whatToMove.position.y, m_whatToMove.position.z);
+                direction.z = 0;
+                looser.gameObject.SetActive(true);
+            }
+
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                desiredLane++;
+                if (desiredLane == 3)
+                {
+                    desiredLane = 2;
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                desiredLane--;
+                if (desiredLane == -1)
+                {
+                    desiredLane = 0;
+                }
+            }
+
+            if (isContinue)
+            {
+                direction.z = forwardSpeed;
+
+                Vector3 targetPosition = transform.position;
+
+                if (desiredLane == 0)
+                {
+                    m_whatToMove.position = new Vector3(centerPosition - laneDistance, m_whatToMove.position.y, m_whatToMove.position.z);
+                    //targetPosition += Vector3.left *laneDistance;
+                }
+                else if (desiredLane == 1)
+                {
+                    m_whatToMove.position = new Vector3(centerPosition, m_whatToMove.position.y, m_whatToMove.position.z);
+                    //targetPosition += Vector3.right * laneDistance;
+                }
+                else
+                {
+                    m_whatToMove.position = new Vector3(centerPosition + laneDistance, m_whatToMove.position.y, m_whatToMove.position.z);
+
+                }
+                // transform.position = Vector3.Lerp(transform.position, targetPosition, 80*Time.deltaTime);
+            }
+            else
+            {
+                if (oneTime)
+                {
+                    Debug.Log("TERMINATION DE LA PARTIE");
+                    forwardSpeed = 0;
+                    direction.z = forwardSpeed;
+                    transform.position += transform.forward * forwardSpeed * Time.deltaTime;
+
+                    Vector3 targetPosition = transform.position;
+                    Debug.Log(desiredLane);
+                    GetXValueOfLane(desiredLane, out float xValueOnUnity);
+                    transform.position = new Vector3(xValueOnUnity, transform.position.y, transform.position.z);
+
+
+                    oneTime = false;
+                }
 
             }
-            // transform.position = Vector3.Lerp(transform.position, targetPosition, 80*Time.deltaTime);
+
+
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                SpawnCubeForwardPlayer(4);
+
+            }
         }
         else
         {
-            if (oneTime)
-            {
-                Debug.Log("TERMINATION DE LA PARTIE");
-                forwardSpeed = 0;
-                direction.z = forwardSpeed;
-                transform.position += transform.forward * forwardSpeed * Time.deltaTime;
-
-                Vector3 targetPosition = transform.position;
-                Debug.Log(desiredLane);
-                GetXValueOfLane(desiredLane, out float xValueOnUnity);
-                transform.position = new Vector3(xValueOnUnity, transform.position.y, transform.position.z);
-
-
-                oneTime = false;
-            }
+            SceneManager.LoadScene("SampleScene");
 
         }
+    }
 
+    private void respawnBear()
+    {
+        SpawnCubeForwardPlayer(4);
+    }
 
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SpawnCubeForwardPlayer(1);
-        }
+    private void respawnTrees()
+    {
+        SpawnCubeForwardPlayer(2);
     }
 
     public void GetXValueOfLane(int lineNumber, out float xValueOnUnityAxis)
@@ -136,7 +162,6 @@ public class movement : MonoBehaviour
         //controller.Move(direction * Time.fixedDeltaTime);
     }
 
-    public Transform m_playerPosition;
     public void SpawnCubeForwardPlayer(int numPiege)
     {
         Vector3 spawnPosition = m_playerPosition.position + Vector3.forward * cubeSpawnDistance;
@@ -149,6 +174,16 @@ public class movement : MonoBehaviour
         else if (numPiege == 2)
         {
             cubePrefab = cubePrefabB;
+            Invoke("respawnTrees", 10.0f);
+        }
+        else if (numPiege == 3)
+        {
+            cubePrefab = cubePrefabC;
+        }
+        else if (numPiege == 4)
+        {
+            cubePrefab = cubePrefabD;
+            Invoke("respawnBear", 4.0f);
         }
 
         GameObject objet = Instantiate(cubePrefab, spawnPosition, Quaternion.identity);
@@ -167,6 +202,16 @@ public class movement : MonoBehaviour
         else if (numPiege == 2)
         {
             cubePrefab = cubePrefabB;
+            Invoke("respawnTrees", 10.0f);
+        }
+        else if (numPiege == 3)
+        {
+            cubePrefab = cubePrefabC;
+        }
+        else if (numPiege == 4)
+        {
+            cubePrefab = cubePrefabD;
+            Invoke("respawnBear", 4.0f);
         }
 
         GameObject objet = Instantiate(cubePrefab, spawnPosition, Quaternion.identity);
@@ -182,6 +227,18 @@ public class movement : MonoBehaviour
             isCollidingWithCube = true;
         }
         if (other.CompareTag("Wolf"))
+        {
+            Debug.DrawLine(other.transform.position, transform.position, Color.red, 10f);
+            // Le joueur est en collision avec le cube
+            isCollidingWithCube = true;
+        }
+        if (other.CompareTag("Barrier"))
+        {
+            Debug.DrawLine(other.transform.position, transform.position, Color.red, 10f);
+            // Le joueur est en collision avec le cube
+            isCollidingWithCube = true;
+        }
+        if (other.CompareTag("Bear"))
         {
             Debug.DrawLine(other.transform.position, transform.position, Color.red, 10f);
             // Le joueur est en collision avec le cube
@@ -212,6 +269,27 @@ public class movement : MonoBehaviour
                 isCollidingWithCube = false;
             }
         }
+        if (other.CompareTag("Barrier"))
+        {
+            float cubeXPosition = other.transform.position.x;
+            float playerXPosition = transform.position.x;
+
+            if (Mathf.Abs(cubeXPosition - playerXPosition) < 1) // Si le cube est sur la même bande que le joueur
+            {
+                isCollidingWithCube = false;
+            }
+        }
+        if (other.CompareTag("Bear"))
+        {
+            float cubeXPosition = other.transform.position.x;
+            float playerXPosition = transform.position.x;
+
+            if (Mathf.Abs(cubeXPosition - playerXPosition) < 1) // Si le cube est sur la même bande que le joueur
+            {
+                isCollidingWithCube = false;
+            }
+        }
+
     }
 
 
