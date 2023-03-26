@@ -7,9 +7,9 @@ using UnityEngine.Networking;
 public class SendPosition : MonoBehaviour
 {
     private float z;
-    
-    private string url = "https://bartteam.000webhostapp.com/updatePosition.php?position=0%3B0%3B";
-    private string urlTrap = "https://bartteam.000webhostapp.com/fetchTraps.php";
+
+    private string url = "https://bartteam2.000webhostapp.com/updatePosition.php?position=0%3B0%3B";
+    private string urlTrap = "https://bartteam2.000webhostapp.com/fetchTraps.php";
     private string urlComplete = "";
     private float timer = 0.0f;
     public float interval = 1.0f;
@@ -17,13 +17,13 @@ public class SendPosition : MonoBehaviour
     private movement _movement = null;
 
     private string traps;
-    
+
     bool state1 = true;
     bool state2 = true;
     bool state3 = true;
     bool state4 = true;
-    
-    
+
+
     public bool isContinue
     {
         get { return _movement.isContinue; }
@@ -36,15 +36,16 @@ public class SendPosition : MonoBehaviour
         if (_movement == null)
             _movement = gameObject.GetComponent<movement>();
 
-       
-        
+
+
     }
 
     private void Update()
     {
         timer += Time.deltaTime;
-        
-        if (timer > interval) {
+
+        if (timer > interval)
+        {
             // Réinitialiser le timer
             timer = 0f;
 
@@ -61,7 +62,7 @@ public class SendPosition : MonoBehaviour
         {
             isContinue = false;
         }
-        
+
     }
 
     IEnumerator UpdatePosition()
@@ -70,7 +71,7 @@ public class SendPosition : MonoBehaviour
         {
             UnityWebRequest request = UnityWebRequest.Get(urlComplete);
             yield return request.SendWebRequest();
-          
+
         }
     }
 
@@ -81,7 +82,7 @@ public class SendPosition : MonoBehaviour
         int trap2;
         int trap3;
         int trap4;
-        
+
         UnityWebRequest request = UnityWebRequest.Get(urlTrap);
         yield return request.SendWebRequest();
 
@@ -96,29 +97,29 @@ public class SendPosition : MonoBehaviour
             trap4 = int.Parse(values[3]);
 
             Debug.Log(trap1);
-            
+
             if (trap1 == 1 && state1)
             {
                 Debug.Log("TRAP 1 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube();
+                _movement.SpawnCube(1);
                 state1 = false;
             }
             if (trap2 == 1 && state2)
             {
                 Debug.Log("TRAP 2 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube();
+                _movement.SpawnCube(2);
                 state2 = false;
             }
             if (trap3 == 1 && state3)
             {
                 Debug.Log("TRAP 3 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube();
+                _movement.SpawnCube(3);
                 state3 = false;
             }
             if (trap4 == 1 && state4)
             {
                 Debug.Log("TRAP 4 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube();
+                _movement.SpawnCube(4);
                 state4 = false;
             }
 
