@@ -32,19 +32,12 @@ public class movement : MonoBehaviour
 
     void Start()
     {
-        //controller = GetComponent<CharacterController>();
-        Debug.Log(transform.position);
         centerPosition = transform.position.x;
-        Invoke("DisplayMessage", 30.0f);
 
         goLeft.action.started += OnAButtonStartedLeft;
         goRight.action.started += OnAButtonStartedRight;
     }
 
-    void DisplayMessage()
-    {
-        Debug.Log(transform.position);
-    }
 
     public Transform m_whatToMove;
     void Update()
@@ -112,21 +105,9 @@ public class movement : MonoBehaviour
 
                 Vector3 targetPosition = transform.position;
                 Debug.Log(desiredLane);
-                if (desiredLane == 0)
-                {
-                    transform.position = new Vector3(centerPosition - laneDistance, transform.position.y, transform.position.z);
-                    //targetPosition += Vector3.left *laneDistance;
-                }
-                else if (desiredLane == 1)
-                {
-                    transform.position = new Vector3(centerPosition, transform.position.y, transform.position.z);
-                    //targetPosition += Vector3.right * laneDistance;
-                }
-                else
-                {
-                    transform.position = new Vector3(centerPosition + laneDistance, transform.position.y, transform.position.z);
+                GetXValueOfLane(desiredLane, out float xValueOnUnity);
+                transform.position = new Vector3(xValueOnUnity, transform.position.y, transform.position.z);
 
-                }
 
                 oneTime = false;
             }
@@ -137,10 +118,17 @@ public class movement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            SpawnCube(1);
+            SpawnCubeForwardPlayer(1);
         }
     }
 
+    public void GetXValueOfLane(int lineNumber, out float xValueOnUnityAxis)
+    {
+        xValueOnUnityAxis = 0;
+        if (lineNumber == 0) xValueOnUnityAxis = centerPosition - laneDistance;
+        if (lineNumber == 1) xValueOnUnityAxis = centerPosition;
+        if (lineNumber == 2) xValueOnUnityAxis = centerPosition + laneDistance;
+    }
 
     //public Transform m_moveDirection;
     private void FixedUpdate()
@@ -149,10 +137,10 @@ public class movement : MonoBehaviour
     }
 
     public Transform m_playerPosition;
-    public void SpawnCube(int numPiege)
+    public void SpawnCubeForwardPlayer(int numPiege)
     {
         Vector3 spawnPosition = m_playerPosition.position + Vector3.forward * cubeSpawnDistance;
-        spawnPosition.y = 1;
+        spawnPosition.y = 0;
 
         if (numPiege == 1)
         {
@@ -163,7 +151,25 @@ public class movement : MonoBehaviour
             cubePrefab = cubePrefabB;
         }
 
-        GameObject cube = Instantiate(cubePrefab, spawnPosition, Quaternion.identity);
+        GameObject objet = Instantiate(cubePrefab, spawnPosition, Quaternion.identity);
+    }
+
+    public void SpawnCubeOnLane(int numPiege, int laneNumber)
+    {
+        float playerZForwardPosition = m_playerPosition.position.z;
+        GetXValueOfLane(laneNumber, out float xOfLane);
+        Vector3 spawnPosition = new Vector3(xOfLane, 0, playerZForwardPosition + cubeSpawnDistance);
+
+        if (numPiege == 1)
+        {
+            cubePrefab = cubePrefabA;
+        }
+        else if (numPiege == 2)
+        {
+            cubePrefab = cubePrefabB;
+        }
+
+        GameObject objet = Instantiate(cubePrefab, spawnPosition, Quaternion.identity);
     }
 
     // Ajout de la détection de collision avec le cube

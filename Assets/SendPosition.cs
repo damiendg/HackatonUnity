@@ -101,28 +101,35 @@ public class SendPosition : MonoBehaviour
             if (trap1 == 1 && state1)
             {
                 Debug.Log("TRAP 1 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube(1);
+                //Loup
+                _movement.SpawnCubeForwardPlayer(1);
                 state1 = false;
             }
             if (trap2 == 1 && state2)
             {
                 Debug.Log("TRAP 2 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube(2);
+                //ARBRE 
+                _movement.SpawnCubeOnLane(2, 0);
+                _movement.SpawnCubeOnLane(2, 2);
                 state2 = false;
+                //Invoke("state2=true", 4.0f); //NO SENSE AT ALL WARNING
             }
             if (trap3 == 1 && state3)
             {
                 Debug.Log("TRAP 3 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube(3);
+                //None
+                _movement.SpawnCubeForwardPlayer(1);
                 state3 = false;
             }
             if (trap4 == 1 && state4)
             {
                 Debug.Log("TRAP 4 : ACTIVEEEEEEEEEEEEEER");
-                _movement.SpawnCube(4);
+                _movement.SpawnCubeForwardPlayer(1);
                 state4 = false;
             }
 
         }
     }
+
+
 }
